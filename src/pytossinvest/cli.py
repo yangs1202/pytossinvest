@@ -12,6 +12,17 @@
     --client-id / TOSSINVEST_CLIENT_ID
     --client-secret / TOSSINVEST_CLIENT_SECRET
     --account / TOSSINVEST_ACCOUNT (계좌 API 의 accountSeq)
+
+자격증명은 설정 파일 ``~/.tossinvest/token.json`` 에서도 읽습니다(우선순위는
+플래그 > 환경변수 > 설정 파일). 파일 형식::
+
+    {
+      "client_id": "tsck_live_...",
+      "client_secret": "tssk_live_...",
+      "account": 1
+    }
+
+설정 파일 경로는 환경변수 ``TOSSINVEST_CONFIG`` 로 변경할 수 있습니다.
 """
 
 from __future__ import annotations
@@ -25,6 +36,8 @@ from typing import Any, List, Optional
 from . import __version__
 from .client import DEFAULT_BASE_URL, TossInvestClient
 from .exceptions import TossInvestError, TossInvestAPIError
+
+DEFAULT_CONFIG_PATH = "~/.tossinvest/token.json"
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -220,6 +233,25 @@ def _env_int(name: str) -> Optional[int]:
     return int(val) if val else None
 
 
+def _load_config() -> dict:
+    """``~/.tossinvest/token.json`` (또는 TOSSINVEST_CONFIG) 에서 자격증명을 읽는다.
+
+    파일이 없으면 빈 dict 를 반환하고, 손상된 경우 경고만 출력한다.
+    """
+    path = os.path.expanduser(
+        os.environ.get("TOSSINVEST_CONFIG", DEFAULT_CONFIG_PATH)
+    )
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except FileNotFoundError:
+        return {}
+    except (ValueError, OSError) as e:
+        print(f"경고: 설정 파일을 읽을 수 없습니다 ({path}): {e}", file=sys.stderr)
+        return {}
+
+
 def _symbols(values: List[str]) -> str:
     """공백 분리 인자와 콤마 분리 인자를 모두 콤마 문자열로 정규화."""
     out: List[str] = []
@@ -231,11 +263,21 @@ def _symbols(values: List[str]) -> str:
 def main(argv: Optional[List[str]] = None) -> int:
     args = _build_parser().parse_args(argv)
 
-    if not args.client_id or not args.client_secret:
+    # 우선순위: 플래그/환경변수(args) > 설정 파일(~/.tossinvest/token.json)
+    cfg = _load_config()
+    client_id = args.client_id or cfg.get("client_id")
+    client_secret = args.client_secret or cfg.get("client_secret")
+    account = args.account
+    if account is None and cfg.get("account") is not None:
+        account = int(cfg["account"])
+    base_url = args.base_url or cfg.get("base_url") or DEFAULT_BASE_URL
+
+    if not client_id or not client_secret:
         print(
             "오류: client_id/client_secret 이 필요합니다. "
-            "--client-id/--client-secret 또는 환경변수 "
-            "TOSSINVEST_CLIENT_ID/TOSSINVEST_CLIENT_SECRET 를 설정하세요.",
+            "--client-id/--client-secret, 환경변수 "
+            "TOSSINVEST_CLIENT_ID/TOSSINVEST_CLIENT_SECRET, 또는 설정 파일 "
+            f"{DEFAULT_CONFIG_PATH} 를 설정하세요.",
             file=sys.stderr,
         )
         return 2
@@ -249,10 +291,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 3
 
     client = TossInvestClient(
-        client_id=args.client_id,
-        client_secret=args.client_secret,
-        account_seq=args.account,
-        base_url=args.base_url or DEFAULT_BASE_URL,
+        client_id=client_id,
+        client_secret=client_secret,
+        account_seq=account,
+        base_url=base_url,
     )
     try:
         with client:

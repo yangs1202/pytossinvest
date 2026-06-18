@@ -39,6 +39,39 @@ def test_trade_command_blocked_without_yes(capsys):
 
 
 @responses.activate
+def test_credentials_loaded_from_config_file(tmp_path, monkeypatch, capsys):
+    cfg = tmp_path / "token.json"
+    cfg.write_text(
+        json.dumps({"client_id": "cfg_id", "client_secret": "cfg_secret", "account": 5}),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("TOSSINVEST_CONFIG", str(cfg))
+    monkeypatch.delenv("TOSSINVEST_CLIENT_ID", raising=False)
+    monkeypatch.delenv("TOSSINVEST_CLIENT_SECRET", raising=False)
+    monkeypatch.delenv("TOSSINVEST_ACCOUNT", raising=False)
+
+    _register_token()
+    responses.add(
+        responses.GET, f"{BASE}/api/v1/holdings", json={"result": {}}, status=200
+    )
+    # 자격증명 플래그 없이 호출 — 설정 파일에서 로드되어야 함
+    code = cli.main(["holdings"])
+    assert code == 0
+    assert responses.calls[-1].request.headers["X-Tossinvest-Account"] == "5"
+
+
+def test_config_without_credentials_returns_2(tmp_path, monkeypatch):
+    cfg = tmp_path / "token.json"
+    cfg.write_text(json.dumps({"account": 5}), encoding="utf-8")
+    monkeypatch.setenv("TOSSINVEST_CONFIG", str(cfg))
+    monkeypatch.delenv("TOSSINVEST_CLIENT_ID", raising=False)
+    monkeypatch.delenv("TOSSINVEST_CLIENT_SECRET", raising=False)
+    monkeypatch.delenv("TOSSINVEST_ACCOUNT", raising=False)
+    # 설정 파일에 client_id/secret 이 없으면 exit 2
+    assert cli.main(["accounts"]) == 2
+
+
+@responses.activate
 def test_price_command_outputs_json(capsys):
     _register_token()
     responses.add(

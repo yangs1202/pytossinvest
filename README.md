@@ -60,13 +60,33 @@ with TossInvestClient(client_id="c_...", client_secret="s_...") as client:
 
 ## CLI
 
-설치하면 `tossinvest` 명령을 사용할 수 있습니다. 인증은 환경변수로 전달합니다.
+설치하면 `tossinvest` 명령을 사용할 수 있습니다. 인증은 **설정 파일** 또는 환경변수로 전달합니다.
+
+설정 파일(`~/.tossinvest/token.json`)에 한 번 저장해 두면 어디서나 바로 사용할 수 있습니다:
+
+```bash
+mkdir -p ~/.tossinvest && chmod 700 ~/.tossinvest
+cat > ~/.tossinvest/token.json <<'JSON'
+{
+  "client_id": "tsck_live_...",
+  "client_secret": "tssk_live_...",
+  "account": 1
+}
+JSON
+chmod 600 ~/.tossinvest/token.json
+```
+
+또는 환경변수로 전달할 수도 있습니다(설정 파일보다 우선):
 
 ```bash
 export TOSSINVEST_CLIENT_ID=tsck_live_...
 export TOSSINVEST_CLIENT_SECRET=tssk_live_...
 export TOSSINVEST_ACCOUNT=1   # 계좌·주문 API 의 accountSeq
+```
 
+우선순위는 **명령행 플래그 > 환경변수 > 설정 파일**입니다. 설정 파일 경로는 `TOSSINVEST_CONFIG` 로 변경할 수 있습니다.
+
+```bash
 tossinvest price 005930 AAPL          # 현재가 (다건)
 tossinvest candles 005930 --interval 1d --count 20
 tossinvest accounts                   # 계좌 목록
