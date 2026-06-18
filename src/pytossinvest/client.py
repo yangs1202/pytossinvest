@@ -148,6 +148,12 @@ class TossInvestClient:
         if params is not None:
             clean_params = {k: v for k, v in params.items() if v is not None}
 
+        # 토스 API 는 POST 에 Content-Type: application/json 을 요구합니다.
+        # body 가 없는 POST(예: 주문 취소)도 빈 객체를 보내 헤더가 누락되지
+        # 않도록 합니다. (requests 는 json=None 이면 Content-Type 을 설정하지 않음)
+        if method.upper() == "POST" and json_body is None:
+            json_body = {}
+
         headers = {}
         if require_account:
             seq = account_seq if account_seq is not None else self.account_seq

@@ -175,6 +175,25 @@ def test_create_order_requires_exactly_one_quantity_mode():
 
 
 @responses.activate
+def test_cancel_order_sends_json_content_type():
+    # body 가 없는 POST(주문 취소)도 Content-Type: application/json 과 빈 객체를
+    # 보내야 한다. (토스 API 는 누락 시 415 unsupported-content-type 을 반환)
+    _register_token()
+    responses.add(
+        responses.POST,
+        f"{BASE}/api/v1/orders/o1/cancel",
+        json={"result": {"orderId": "o1"}},
+        status=200,
+    )
+    client = _client()
+    client.account_seq = 1
+    client.cancel_order("o1")
+    req = responses.calls[-1].request
+    assert req.headers["Content-Type"] == "application/json"
+    assert req.body == b"{}"
+
+
+@responses.activate
 def test_error_envelope_parsed():
     _register_token()
     responses.add(
