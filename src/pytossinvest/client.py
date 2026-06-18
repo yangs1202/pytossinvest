@@ -10,11 +10,19 @@ from __future__ import annotations
 import random
 import threading
 import time
+import warnings
 from typing import Any, Dict, Iterable, List, Optional, Union
 
-import requests
+# macOS 시스템 Python(LibreSSL 빌드) 등에서 urllib3 v2 가 import 시점에 내는
+# NotOpenSSLWarning 을 숨긴다. requests(→urllib3) import 보다 먼저 필터링해야
+# 적용되며, 이 한 메시지만 좁게 무시한다.
+warnings.filterwarnings(
+    "ignore", message=r"urllib3 v2 only supports OpenSSL 1\.1\.1\+.*"
+)
 
-from .exceptions import (
+import requests  # noqa: E402
+
+from .exceptions import (  # noqa: E402
     TossInvestAPIError,
     TossInvestAuthError,
     TossInvestError,
