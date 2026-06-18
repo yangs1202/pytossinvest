@@ -2,6 +2,7 @@
   "name": "pytossinvest",
   "owner": {
     "name": "yangs1202",
+    "email": "me@yangs.kr",
     "url": "https://github.com/yangs1202"
   },
   "metadata": {
@@ -14,7 +15,8 @@
       "description": "토스증권 Open API로 국내·미국 주식 시세/종목/환율/장운영 조회와 계좌·보유주식·주문을 다루는 플러그인 (tossinvest CLI 기반)",
       "version": "0.1.0",
       "author": {
-        "name": "yangs1202"
+        "name": "yangs1202",
+        "email": "me@yangs.kr"
       }
     }
   ]

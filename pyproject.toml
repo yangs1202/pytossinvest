@@ -9,7 +9,7 @@ description = "토스증권 Open API의 비공식 Python 클라이언트 (unoffi
 readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "MIT" }
-authors = [{ name = "yangs1202" }]
+authors = [{ name = "yangs1202", email = "me@yangs.kr" }]
 keywords = ["tossinvest", "toss", "stock", "trading", "openapi", "korea", "krx"]
 classifiers = [
     "Development Status :: 3 - Alpha",

@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "토스증권 Open API로 국내·미국 주식 시세/종목/환율/장운영 조회와 본인 계좌의 보유주식·매수가능금액·주문(생성·정정·취소)을 다루는 플러그인. tossinvest CLI 기반.",
   "author": {
-    "name": "yangs1202"
+    "name": "yangs1202",
+    "email": "me@yangs.kr"
   },
   "homepage": "https://github.com/yangs1202/pytossinvest",
   "license": "MIT",
