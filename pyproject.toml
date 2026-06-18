@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pytossinvest"
+version = "0.1.0"
+description = "토스증권 Open API의 비공식 Python 클라이언트 (unofficial Python client for Toss Invest Open API)"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "yangs1202" }]
+keywords = ["tossinvest", "toss", "stock", "trading", "openapi", "korea", "krx"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+dependencies = ["requests>=2.20"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "responses>=0.23"]
+
+[project.urls]
+Homepage = "https://github.com/yangs1202/pytossinvest"
+"API Docs" = "https://developers.tossinvest.com/docs"
+Issues = "https://github.com/yangs1202/pytossinvest/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

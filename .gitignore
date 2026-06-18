@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# 개발 중 생성한 문서 원본 스크래핑 산출물 (참조용 docs/openapi.json 만 커밋)
+docs_raw/
+docs_raw_all.txt
+llms_raw.txt
+openapi_raw.txt
+/openapi.json
+analyze.py
+
+# 도구 상태 디렉토리
+.omc/
+
+# 환경
+.env
+.DS_Store
