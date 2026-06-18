@@ -28,6 +28,9 @@ dependencies = ["requests>=2.20"]
 [project.optional-dependencies]
 dev = ["pytest>=7.0", "responses>=0.23"]
 
+[project.scripts]
+tossinvest = "pytossinvest.cli:main"
+
 [project.urls]
 Homepage = "https://github.com/yangs1202/pytossinvest"
 "API Docs" = "https://developers.tossinvest.com/docs"

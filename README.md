@@ -58,6 +58,47 @@ with TossInvestClient(client_id="c_...", client_secret="s_...") as client:
     print(client.get_prices("005930"))
 ```
 
+## CLI
+
+설치하면 `tossinvest` 명령을 사용할 수 있습니다. 인증은 환경변수로 전달합니다.
+
+```bash
+export TOSSINVEST_CLIENT_ID=tsck_live_...
+export TOSSINVEST_CLIENT_SECRET=tssk_live_...
+export TOSSINVEST_ACCOUNT=1   # 계좌·주문 API 의 accountSeq
+
+tossinvest price 005930 AAPL          # 현재가 (다건)
+tossinvest candles 005930 --interval 1d --count 20
+tossinvest accounts                   # 계좌 목록
+tossinvest holdings                   # 보유 주식
+tossinvest orders --status OPEN       # 진행 중 주문
+```
+
+출력은 JSON 이며 `-c/--compact` 로 한 줄 출력합니다. 계좌는 `-a/--account` 로 override 합니다.
+
+**주문 생성·정정·취소는 실거래**이므로 `--yes` 플래그가 없으면 실행되지 않습니다:
+
+```bash
+tossinvest order-create --symbol 005930 --side BUY --type LIMIT \
+  --quantity 10 --price 70000 --client-order-id my-001 --yes
+tossinvest order-cancel <ORDER_ID> --yes
+```
+
+종료 코드: `0` 성공 · `1` API 에러 · `2` 인증 정보 누락 · `3` 거래 명령에 `--yes` 누락.
+전체 명령은 `tossinvest --help` 또는 `tossinvest <command> --help` 참고.
+
+## Claude Code Skill
+
+`skills/tossinvest/SKILL.md` 에 [Claude Code](https://claude.com/claude-code) skill 이 포함되어 있습니다.
+Claude 가 토스증권 시세·계좌·주문 작업을 이 CLI 로 수행하도록 안내합니다. 설치:
+
+```bash
+# 사용자 전역 스킬로 링크 (또는 복사)
+ln -s "$(pwd)/skills/tossinvest" ~/.claude/skills/tossinvest
+```
+
+이후 Claude Code 에서 "삼성전자 현재가 알려줘", "내 토스 주식 잔고 보여줘" 같은 요청에 skill 이 활성화됩니다.
+
 ## 인증
 
 토큰 발급은 자동으로 처리됩니다. 첫 API 호출 시 `client_credentials` grant 로 access token 을 발급하고
